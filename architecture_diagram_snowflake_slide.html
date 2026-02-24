@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NovaMart Architecture — Snowflake Slide</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#f8fafc;
+    --bg-card:#ffffff;
+    --text:#11293e;
+    --text-secondary:#4b6584;
+    --text-muted:#7f93a8;
+    --border:#d4e3f0;
+    --border-accent:rgba(41,181,232,.25);
+    --accent:#29B5E8;
+    --snowflake-dark:#0D5B8C;
+    --snowflake-light:#56d0ff;
+    --agent-demand:#6366f1;
+    --agent-customer:#0d9488;
+    --agent-inventory:#059669;
+    --agent-pricing:#db2777;
+    --agent-fulfillment:#d97706;
+    --agent-logistics:#7c3aed;
+    --agent-supplier:#dc2626;
+    --proto-ucp:#2563eb;
+    --proto-a2a:#16a34a;
+    --proto-mcp:#0D5B8C;
+    --proto-ap2:#7c3aed;
+    --proto-acp:#ea580c;
+    --radius:6px;
+    --shadow:0 1px 2px rgba(0,0,0,.05),0 1px 4px rgba(13,91,140,.04);
+  }
+  html{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:12px;color:var(--text);background:var(--bg)}
+  body{min-height:100vh;display:flex;justify-content:center;align-items:center;padding:12px}
+  .canvas{
+    width:960px;height:540px;
+    background:linear-gradient(170deg,#fff 0%,#f4f9fd 40%,#eaf4fb 75%,#f0f7fc 100%);
+    border-radius:10px;overflow:hidden;position:relative;
+    border:1px solid var(--border);
+    box-shadow:0 4px 16px rgba(13,91,140,.08);
+    display:flex;flex-direction:column;
+  }
+  .canvas::after{
+    content:"";position:absolute;inset:0;pointer-events:none;opacity:.03;
+    background-image:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%2329B5E8' fill-opacity='1'%3E%3Cpath d='M30 12v36M30 12l-4 4M30 12l4 4M30 48l-4-4M30 48l4-4M14.3 21l31.4 18M14.3 21l1 6M14.3 21l5.7-2M45.7 39l-1-6M45.7 39l-5.7 2M45.7 21L14.3 39M45.7 21l-5.7-2M45.7 21l-1 6M14.3 39l5.7 2M14.3 39l1-6'/%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  .header{
+    text-align:center;padding:14px 24px 10px;position:relative;overflow:hidden;flex-shrink:0;
+    background:linear-gradient(135deg,#0D5B8C 0%,#1a7ab5 40%,#29B5E8 100%);
+  }
+  .header::before{content:"";position:absolute;top:-40%;left:50%;transform:translateX(-50%);width:500px;height:140px;border-radius:50%;background:radial-gradient(ellipse,rgba(255,255,255,.08) 0%,transparent 70%)}
+  .header::after{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M24 22v-3h-1v3h-3v1h3v3h1v-3h3v-1h-3zm0-20V0h-1v2h-3v1h3v3h1V3h3V2h-3zM4 22v-3H3v3H0v1h3v3h1v-3h3v-1H4zM4 2V0H3v2H0v1h3v3h1V3h3V2H4z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+  .header h1{font-size:16px;font-weight:700;letter-spacing:-.2px;position:relative;z-index:1;color:#fff}
+  .header h1 span{color:#a5e4ff}
+  .header p{font-size:9.5px;color:rgba(255,255,255,.85);margin-top:2px;position:relative;z-index:1}
+
+  .sf-header-icon{position:absolute;top:8px;right:16px;opacity:.12;z-index:2}
+
+  .content{flex:1;display:flex;flex-direction:column;padding:8px 14px 0;gap:3px;min-height:0;position:relative;z-index:1}
+
+  .layer-label{font-size:7.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--snowflake-dark);margin-bottom:3px;display:flex;align-items:center;gap:4px}
+  .layer-label::before{content:"";width:10px;height:2px;background:var(--accent);border-radius:1px}
+
+  .flow-connector{display:flex;justify-content:center;padding:1px 0;flex-shrink:0}
+
+  /* ── Frontend ── */
+  .frontend-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:6px 12px;display:flex;align-items:center;gap:10px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+  .frontend-card::after{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--snowflake-light),var(--accent));opacity:.5}
+  .frontend-icon{width:28px;height:28px;border-radius:6px;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0;box-shadow:0 1px 4px rgba(99,102,241,.2)}
+  .frontend-info h3{font-size:10px;font-weight:600}
+  .frontend-tags{display:flex;flex-wrap:wrap;gap:3px;margin-top:2px}
+  .tag{font-size:7.5px;padding:1px 6px;border-radius:20px;font-weight:500;background:rgba(41,181,232,.06);color:var(--snowflake-dark);border:1px solid rgba(41,181,232,.18)}
+
+  /* ── Protocol Groups ── */
+  .protocol-layer{display:flex;align-items:stretch;gap:6px}
+  .protocol-group{display:flex;gap:4px;flex:1}
+  .protocol-group-label{font-size:5.5px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;text-align:center;margin-bottom:2px}
+  .sf-group-label{color:var(--accent)}
+  .industry-group-label{color:var(--text-muted)}
+  .proto-divider-v{width:1px;background:var(--border);margin:0 2px;flex-shrink:0;align-self:stretch}
+  .protocol-pill{flex:1;min-width:0;border-radius:var(--radius);padding:5px 4px 4px;text-align:center;border:1.5px solid;box-shadow:var(--shadow);position:relative;overflow:hidden;background:var(--bg-card)}
+  .protocol-pill::before{content:"";position:absolute;top:0;left:0;right:0;height:2px}
+  .protocol-pill .proto-code{font-size:10.5px;font-weight:800;letter-spacing:.3px}
+  .protocol-pill .proto-name{font-size:6.5px;color:var(--text-secondary);margin-top:0;font-weight:600}
+  .protocol-pill .proto-role{font-size:5.5px;color:var(--text-muted);margin-top:0;line-height:1.1}
+  /* Snowflake pills — blue accent */
+  .sf-pill{border-color:rgba(41,181,232,.25);background:linear-gradient(180deg,#e8f7fd,#fff)}
+  .sf-pill::before{background:var(--accent)}
+  .sf-pill .proto-code{color:var(--snowflake-dark)}
+  .sf-pill .sf-icon{font-size:7px;opacity:.6}
+  /* Industry pills — muted warm tones */
+  .ind-ucp{border-color:rgba(37,99,235,.15);background:linear-gradient(180deg,#f8faff,#fff)}.ind-ucp::before{background:rgba(37,99,235,.5)}.ind-ucp .proto-code{color:rgba(37,99,235,.7)}
+  .ind-a2a{border-color:rgba(22,163,74,.15);background:linear-gradient(180deg,#f8fdf9,#fff)}.ind-a2a::before{background:rgba(22,163,74,.5)}.ind-a2a .proto-code{color:rgba(22,163,74,.7)}
+  .ind-ap2{border-color:rgba(124,58,237,.15);background:linear-gradient(180deg,#faf8ff,#fff)}.ind-ap2::before{background:rgba(124,58,237,.5)}.ind-ap2 .proto-code{color:rgba(124,58,237,.7)}
+  .ind-acp{border-color:rgba(234,88,12,.15);background:linear-gradient(180deg,#fffaf6,#fff)}.ind-acp::before{background:rgba(234,88,12,.5)}.ind-acp .proto-code{color:rgba(234,88,12,.7)}
+
+  /* ── Agents ── */
+  .agents-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+  .agent-card{background:var(--bg-card);border-radius:var(--radius);padding:5px 3px 4px;text-align:center;border:1.5px solid var(--border);box-shadow:var(--shadow);position:relative}
+  .agent-card::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;border-radius:var(--radius) var(--radius) 0 0}
+  .agent-icon{font-size:14px;line-height:1}
+  .agent-name{font-size:6.5px;font-weight:700;margin-top:1px;line-height:1.1}
+  .agent-sub{font-size:5.5px;color:var(--text-muted);margin-top:0;line-height:1.1}
+  .agent-demand{border-color:rgba(99,102,241,.18)}.agent-demand::before{background:var(--agent-demand)}
+  .agent-customer{border-color:rgba(13,148,136,.18)}.agent-customer::before{background:var(--agent-customer)}
+  .agent-inventory{border-color:rgba(5,150,105,.18)}.agent-inventory::before{background:var(--agent-inventory)}
+  .agent-pricing{border-color:rgba(219,39,119,.18)}.agent-pricing::before{background:var(--agent-pricing)}
+  .agent-fulfillment{border-color:rgba(217,119,6,.18)}.agent-fulfillment::before{background:var(--agent-fulfillment)}
+  .agent-logistics{border-color:rgba(124,58,237,.18)}.agent-logistics::before{background:var(--agent-logistics)}
+  .agent-supplier{border-color:rgba(220,38,38,.18)}.agent-supplier::before{background:var(--agent-supplier)}
+  .a2a-bar{margin-top:2px;display:flex;align-items:center;justify-content:center;gap:3px}
+  .a2a-bar .a2a-line{flex:1;height:1px;background:repeating-linear-gradient(90deg,var(--proto-a2a) 0,var(--proto-a2a) 3px,transparent 3px,transparent 6px);opacity:.45}
+  .a2a-bar .a2a-label{font-size:6px;color:var(--proto-a2a);font-weight:700;white-space:nowrap;padding:0 4px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:20px}
+
+  /* ── Cortex ── */
+  .cortex-strip{display:flex;gap:5px}
+  .cortex-card{flex:1;border-radius:var(--radius);padding:6px 8px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(135deg,#0D5B8C 0%,#1a7ab5 50%,#29B5E8 100%);box-shadow:0 2px 8px rgba(41,181,232,.12)}
+  .cortex-card::after{content:"";position:absolute;top:-14px;right:-14px;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.06)}
+  .cortex-card h4{font-size:9px;font-weight:700;display:flex;align-items:center;gap:4px}
+  .cortex-card h4 .sf-dot{width:5px;height:5px;border-radius:50%;background:#fff;box-shadow:0 0 4px rgba(255,255,255,.5)}
+  .cortex-card p{font-size:6px;opacity:.85;margin-top:1px;line-height:1.2}
+  .cortex-card .powers{font-size:6px;margin-top:2px;padding:1px 5px;background:rgba(255,255,255,.15);border-radius:20px;display:inline-block;font-weight:600}
+
+  /* ── Data ── */
+  .data-card{background:var(--bg-card);border:1.5px solid var(--border-accent);border-radius:var(--radius);padding:5px 10px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+  .data-card::after{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--snowflake-light),var(--accent));opacity:.35}
+  .data-header{display:flex;align-items:center;gap:6px;margin-bottom:4px}
+  .data-header .db-icon{width:20px;height:20px;border-radius:4px;background:linear-gradient(135deg,#29B5E8,#0D5B8C);display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:0 1px 4px rgba(41,181,232,.2)}
+  .data-header h4{font-size:9px;font-weight:700}
+  .data-header h4 span{font-weight:400;color:var(--text-secondary);font-size:7.5px}
+  .schema-row{display:flex;gap:4px}
+  .schema-chip{flex:1;padding:3px 0;text-align:center;background:#eef8fd;border:1px solid rgba(41,181,232,.18);border-radius:4px;font-size:6.5px;font-weight:700;color:var(--snowflake-dark);letter-spacing:.2px}
+
+  /* ── Infrastructure ── */
+  .dc-strip{display:flex;gap:5px}
+  .dc-card{flex:1;text-align:center;padding:4px 3px;border-radius:var(--radius);background:var(--bg-card);border:1px solid var(--border);box-shadow:var(--shadow)}
+  .dc-dot{width:6px;height:6px;border-radius:50%;background:#22c55e;margin:0 auto 2px;box-shadow:0 0 4px rgba(34,197,94,.3)}
+  .dc-name{font-size:7px;font-weight:700}
+  .dc-label{font-size:5px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.4px}
+
+  /* ── Footer ── */
+  .footer{text-align:center;padding:6px 16px 8px;border-top:1px solid var(--border);background:#f4f9fd;flex-shrink:0}
+  .footer-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;background:linear-gradient(135deg,#0D5B8C,#29B5E8);color:#fff;border-radius:20px;font-size:7.5px;font-weight:600;box-shadow:0 2px 6px rgba(41,181,232,.2)}
+  .footer-badge .sf-icon{width:10px;height:10px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center}
+  .footer-badge .sf-icon svg{width:7px;height:7px}
+</style>
+</head>
+<body>
+<div class="canvas">
+  <!-- Decorative Snowflake in header -->
+  <svg class="sf-header-icon" width="50" height="50" viewBox="0 0 80 80" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round">
+    <line x1="40" y1="8" x2="40" y2="72"/>
+    <line x1="40" y1="8" x2="34" y2="16"/><line x1="40" y1="8" x2="46" y2="16"/>
+    <line x1="40" y1="72" x2="34" y2="64"/><line x1="40" y1="72" x2="46" y2="64"/>
+    <line x1="12.3" y1="24" x2="67.7" y2="56"/>
+    <line x1="12.3" y1="24" x2="14.5" y2="33"/><line x1="12.3" y1="24" x2="21" y2="21"/>
+    <line x1="67.7" y1="56" x2="66" y2="47"/><line x1="67.7" y1="56" x2="59" y2="59"/>
+    <line x1="67.7" y1="24" x2="12.3" y2="56"/>
+    <line x1="67.7" y1="24" x2="59" y2="21"/><line x1="67.7" y1="24" x2="66" y2="33"/>
+    <line x1="12.3" y1="56" x2="21" y2="59"/><line x1="12.3" y1="56" x2="14.5" y2="47"/>
+  </svg>
+
+  <div class="header">
+    <h1>NovaMart<span>:</span> Agentic Retail Intelligence Platform</h1>
+    <p>7 AI Agents &nbsp;&middot;&nbsp; 4 Cortex Services + MCP &nbsp;&middot;&nbsp; 4 Industry Protocols &nbsp;&middot;&nbsp; End-to-End Autonomous Commerce</p>
+  </div>
+
+  <div class="content">
+    <!-- Layer 1 -->
+    <div>
+      <div class="layer-label">Layer 1 &mdash; Frontend Experience</div>
+      <div class="frontend-card">
+        <div class="frontend-icon">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        </div>
+        <div class="frontend-info">
+          <h3>Streamlit Glassmorphism UI</h3>
+          <div class="frontend-tags">
+            <span class="tag">Dark / Light Mode</span>
+            <span class="tag">Cinematic Boot</span>
+            <span class="tag">Mobile Responsive</span>
+            <span class="tag">Activity Stream</span>
+            <span class="tag">Agent Cascade</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-connector"><svg width="14" height="8" viewBox="0 0 14 8"><path d="M7 0v5M4.5 3.5 7 6.5 9.5 3.5" stroke="#29B5E8" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity=".5"/></svg></div>
+
+    <!-- Layer 2 -->
+    <div>
+      <div class="layer-label">Layer 2 &mdash; Snowflake Cortex Services + Industry Commerce Protocols</div>
+      <div class="protocol-layer">
+        <div style="flex:1.1">
+          <div class="protocol-group-label sf-group-label">&#x2744; Snowflake Cortex (Native)</div>
+          <div class="protocol-group">
+            <div class="protocol-pill sf-pill"><div class="proto-code">Cortex Search</div><div class="proto-name">Semantic Discovery</div><div class="proto-role">NL product intent</div></div>
+            <div class="protocol-pill sf-pill"><div class="proto-code">Cortex Complete</div><div class="proto-name">LLM Reasoning</div><div class="proto-role">Agent intelligence</div></div>
+            <div class="protocol-pill sf-pill"><div class="proto-code">Cortex Analyst</div><div class="proto-name">Text-to-SQL</div><div class="proto-role">Demand analytics</div></div>
+            <div class="protocol-pill sf-pill"><div class="proto-code">MCP</div><div class="proto-name">Model Context</div><div class="proto-role">AI transport layer</div></div>
+          </div>
+        </div>
+        <div class="proto-divider-v"></div>
+        <div style="flex:0.9">
+          <div class="protocol-group-label industry-group-label">Industry Protocols</div>
+          <div class="protocol-group">
+            <div class="protocol-pill ind-ucp"><div class="proto-code">UCP</div><div class="proto-name">Universal Commerce</div><div class="proto-role">Orchestration</div></div>
+            <div class="protocol-pill ind-a2a"><div class="proto-code">A2A</div><div class="proto-name">Agent-to-Agent</div><div class="proto-role">Inter-agent comms</div></div>
+            <div class="protocol-pill ind-ap2"><div class="proto-code">AP2</div><div class="proto-name">Agent Payment</div><div class="proto-role">Payment flow</div></div>
+            <div class="protocol-pill ind-acp"><div class="proto-code">ACP</div><div class="proto-name">Agent Commerce</div><div class="proto-role">Transactions</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-connector"><svg width="14" height="8" viewBox="0 0 14 8"><path d="M7 0v5M4.5 3.5 7 6.5 9.5 3.5" stroke="#29B5E8" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity=".5"/></svg></div>
+
+    <!-- Layer 3 -->
+    <div>
+      <div class="layer-label">Layer 3 &mdash; 7 Autonomous AI Agents</div>
+      <div class="agents-grid">
+        <div class="agent-card agent-demand"><div class="agent-icon">&#x1F4CA;</div><div class="agent-name">Demand Sensing</div><div class="agent-sub">Forecasting</div></div>
+        <div class="agent-card agent-customer"><div class="agent-icon">&#x1F464;</div><div class="agent-name">Customer Intel</div><div class="agent-sub">Segmentation</div></div>
+        <div class="agent-card agent-inventory"><div class="agent-icon">&#x1F4E6;</div><div class="agent-name">Inventory Opt.</div><div class="agent-sub">ATP &amp; stock</div></div>
+        <div class="agent-card agent-pricing"><div class="agent-icon">&#x1F4B0;</div><div class="agent-name">Pricing Agent</div><div class="agent-sub">Dynamic pricing</div></div>
+        <div class="agent-card agent-fulfillment"><div class="agent-icon">&#x1F3ED;</div><div class="agent-name">Fulfillment</div><div class="agent-sub">Order routing</div></div>
+        <div class="agent-card agent-logistics"><div class="agent-icon">&#x1F69A;</div><div class="agent-name">Logistics Opt.</div><div class="agent-sub">Route optimize</div></div>
+        <div class="agent-card agent-supplier"><div class="agent-icon">&#x1F91D;</div><div class="agent-name">Supplier Collab</div><div class="agent-sub">Auto-PO</div></div>
+      </div>
+      <div class="a2a-bar"><div class="a2a-line"></div><div class="a2a-label">&larr; A2A: Structured Context Passing &rarr;</div><div class="a2a-line"></div></div>
+    </div>
+
+    <div class="flow-connector"><svg width="14" height="8" viewBox="0 0 14 8"><path d="M7 0v5M4.5 3.5 7 6.5 9.5 3.5" stroke="#29B5E8" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity=".5"/></svg></div>
+
+    <!-- Layer 4 -->
+    <div>
+      <div class="layer-label">Layer 4 &mdash; Snowflake Cortex AI Services</div>
+      <div class="cortex-strip">
+        <div class="cortex-card"><h4><span class="sf-dot"></span>Cortex Search</h4><p>Semantic product discovery &mdash; NL intent</p><span class="powers">Vector Embeddings</span></div>
+        <div class="cortex-card"><h4><span class="sf-dot"></span>Cortex Complete</h4><p>Agent reasoning &mdash; recommendations</p><span class="powers">LLM Inference</span></div>
+        <div class="cortex-card"><h4><span class="sf-dot"></span>Cortex Analyst</h4><p>Analytics intelligence &mdash; demand sensing</p><span class="powers">Semantic Model</span></div>
+      </div>
+    </div>
+
+    <div class="flow-connector"><svg width="14" height="8" viewBox="0 0 14 8"><path d="M7 0v5M4.5 3.5 7 6.5 9.5 3.5" stroke="#29B5E8" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity=".5"/></svg></div>
+
+    <!-- Layer 5 -->
+    <div>
+      <div class="layer-label">Layer 5 &mdash; Snowflake Data Platform</div>
+      <div class="data-card">
+        <div class="data-header">
+          <div class="db-icon"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg></div>
+          <h4>NOVAMART_RETAIL <span>Database</span></h4>
+        </div>
+        <div class="schema-row">
+          <div class="schema-chip">PRODUCT_360</div>
+          <div class="schema-chip">CUSTOMER_360</div>
+          <div class="schema-chip">SUPPLY_CHAIN</div>
+          <div class="schema-chip">AGENTS</div>
+          <div class="schema-chip">SEMANTIC_MODELS</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-connector"><svg width="14" height="8" viewBox="0 0 14 8"><path d="M7 0v5M4.5 3.5 7 6.5 9.5 3.5" stroke="#29B5E8" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity=".5"/></svg></div>
+
+    <!-- Layer 6 -->
+    <div>
+      <div class="layer-label">Layer 6 &mdash; Distribution Infrastructure</div>
+      <div class="dc-strip">
+        <div class="dc-card"><div class="dc-dot"></div><div class="dc-name">Sydney</div><div class="dc-label">Distribution Centre</div></div>
+        <div class="dc-card"><div class="dc-dot"></div><div class="dc-name">Melbourne</div><div class="dc-label">Distribution Centre</div></div>
+        <div class="dc-card"><div class="dc-dot"></div><div class="dc-name">Brisbane</div><div class="dc-label">Distribution Centre</div></div>
+        <div class="dc-card"><div class="dc-dot"></div><div class="dc-name">Perth</div><div class="dc-label">Distribution Centre</div></div>
+        <div class="dc-card"><div class="dc-dot"></div><div class="dc-name">Adelaide</div><div class="dc-label">Distribution Centre</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="footer-badge">
+      <span class="sf-icon"><svg viewBox="0 0 24 24" fill="#29B5E8"><path d="M12.5 2.1c-4.9 0-8.9 3.6-9.6 8.2C1.2 11.2 0 13.1 0 15.3c0 2.9 2.3 5.2 5.2 5.2h13.6c2.9 0 5.2-2.3 5.2-5.2 0-2.2-1.4-4.1-3.4-4.9-.2-4.9-4.2-8.3-8.1-8.3z"/></svg></span>
+      Powered by Snowflake Cortex
+    </div>
+  </div>
+</div>
+</body>
+</html>

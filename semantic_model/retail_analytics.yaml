@@ -1,0 +1,487 @@
+name: retail_analytics
+description: "Retail Analytics - Sales, Inventory, and Customer Insights for Agentic Commerce Platform"
+
+tables:
+  - name: orders
+    description: "Customer orders with transaction details, channels, and payment information"
+    base_table:
+      database: NOVAMART_RETAIL
+      schema: CUSTOMER_360
+      table: ORDERS
+    dimensions:
+      - name: order_id
+        description: "Unique order identifier"
+        expr: ORDER_ID
+        data_type: VARCHAR
+      - name: customer_id
+        description: "Customer identifier linking to customer profile"
+        expr: CUSTOMER_ID
+        data_type: VARCHAR
+      - name: order_date
+        description: "Date and time when order was placed"
+        expr: ORDER_DATE
+        data_type: TIMESTAMP_NTZ
+      - name: channel
+        description: "Sales channel - online, in-store, or click-collect"
+        expr: CHANNEL
+        data_type: VARCHAR
+      - name: store_id
+        description: "Store identifier for in-store and click-collect orders"
+        expr: STORE_ID
+        data_type: VARCHAR
+      - name: status
+        description: "Order status - DELIVERED, SHIPPED, PROCESSING, CANCELLED"
+        expr: STATUS
+        data_type: VARCHAR
+      - name: payment_method
+        description: "Payment method used - credit_card, debit_card, afterpay, paypal, gift_card"
+        expr: PAYMENT_METHOD
+        data_type: VARCHAR
+      - name: delivery_method
+        description: "Delivery method - standard, express, click-collect, in-store"
+        expr: DELIVERY_METHOD
+        data_type: VARCHAR
+    time_dimensions:
+      - name: order_month
+        description: "Month of order for time-series analysis"
+        expr: DATE_TRUNC('month', ORDER_DATE)
+        data_type: DATE
+      - name: order_week
+        description: "Week of order"
+        expr: DATE_TRUNC('week', ORDER_DATE)
+        data_type: DATE
+    measures:
+      - name: subtotal
+        description: "Order subtotal before discounts and shipping"
+        expr: SUBTOTAL
+        data_type: FLOAT
+        default_aggregation: sum
+      - name: discount
+        description: "Discount amount applied to order"
+        expr: DISCOUNT
+        data_type: FLOAT
+        default_aggregation: sum
+      - name: shipping
+        description: "Shipping cost"
+        expr: SHIPPING
+        data_type: FLOAT
+        default_aggregation: sum
+      - name: tax
+        description: "Tax amount"
+        expr: TAX
+        data_type: FLOAT
+        default_aggregation: sum
+      - name: total
+        description: "Total order value including tax and shipping"
+        expr: TOTAL
+        data_type: FLOAT
+        default_aggregation: sum
+      - name: order_count
+        description: "Count of orders"
+        expr: ORDER_ID
+        data_type: VARCHAR
+        default_aggregation: count_distinct
+
+  - name: order_items
+    description: "Individual line items within orders with SKU, quantity, and pricing"
+    base_table:
+      database: NOVAMART_RETAIL
+      schema: CUSTOMER_360
+      table: ORDER_ITEMS
+    dimensions:
+      - name: order_item_id
+        description: "Unique line item identifier"
+        expr: ORDER_ITEM_ID
+        data_type: VARCHAR
+      - name: order_id
+        description: "Parent order identifier"
+        expr: ORDER_ID
+        data_type: VARCHAR
+      - name: sku
+        description: "Product SKU"
+        expr: SKU
+        data_type: VARCHAR
+    measures:
+      - name: quantity
+        description: "Quantity purchased"
+        expr: QUANTITY
+        data_type: INT
+        default_aggregation: sum
+      - name: unit_price
+        description: "Unit price at time of purchase"
+        expr: UNIT_PRICE
+        data_type: FLOAT
+        default_aggregation: avg
+      - name: discount_amount
+        description: "Discount applied to line item"
+        expr: DISCOUNT_AMOUNT
+        data_type: FLOAT
+        default_aggregation: sum
+      - name: line_total
+        description: "Total line value after discounts"
+        expr: LINE_TOTAL
+        data_type: FLOAT
+        default_aggregation: sum
+      - name: items_count
+        description: "Count of line items"
+        expr: ORDER_ITEM_ID
+        data_type: VARCHAR
+        default_aggregation: count
+
+  - name: products
+    description: "Product catalog with pricing, categories, and supplier information"
+    base_table:
+      database: NOVAMART_RETAIL
+      schema: PRODUCT_360
+      table: PRODUCTS
+    dimensions:
+      - name: sku
+        description: "Stock Keeping Unit - unique product identifier"
+        expr: SKU
+        data_type: VARCHAR
+      - name: product_name
+        description: "Product display name"
+        expr: PRODUCT_NAME
+        data_type: VARCHAR
+      - name: division
+        description: "Product division - ELECTRONICS, HOME_LIVING, APPAREL, OUTDOOR_HARDWARE, OFFICE_TECH, TOYS_ENTERTAINMENT, HEALTH_BEAUTY"
+        expr: DIVISION
+        data_type: VARCHAR
+      - name: category
+        description: "Product category within division"
+        expr: CATEGORY
+        data_type: VARCHAR
+      - name: subcategory
+        description: "Product subcategory"
+        expr: SUBCATEGORY
+        data_type: VARCHAR
+      - name: brand
+        description: "Product brand"
+        expr: BRAND
+        data_type: VARCHAR
+      - name: supplier_id
+        description: "Supplier identifier"
+        expr: SUPPLIER_ID
+        data_type: VARCHAR
+    measures:
+      - name: base_price
+        description: "Original retail price"
+        expr: BASE_PRICE
+        data_type: FLOAT
+        default_aggregation: avg
+      - name: current_price
+        description: "Current selling price"
+        expr: CURRENT_PRICE
+        data_type: FLOAT
+        default_aggregation: avg
+      - name: unit_cost
+        description: "Cost price per unit"
+        expr: UNIT_COST
+        data_type: FLOAT
+        default_aggregation: avg
+      - name: product_count
+        description: "Count of products"
+        expr: SKU
+        data_type: VARCHAR
+        default_aggregation: count_distinct
+
+  - name: customers
+    description: "Customer profiles with loyalty tier, lifetime value, and preferences"
+    base_table:
+      database: NOVAMART_RETAIL
+      schema: CUSTOMER_360
+      table: CUSTOMERS
+    dimensions:
+      - name: customer_id
+        description: "Unique customer identifier"
+        expr: CUSTOMER_ID
+        data_type: VARCHAR
+      - name: first_name
+        description: "Customer first name"
+        expr: FIRST_NAME
+        data_type: VARCHAR
+      - name: last_name
+        description: "Customer last name"
+        expr: LAST_NAME
+        data_type: VARCHAR
+      - name: tier
+        description: "Loyalty tier - BRONZE, SILVER, GOLD, PLATINUM"
+        expr: TIER
+        data_type: VARCHAR
+      - name: purchase_frequency
+        description: "Purchase frequency - monthly, fortnightly, weekly, occasional"
+        expr: PURCHASE_FREQUENCY
+        data_type: VARCHAR
+      - name: preferred_channel
+        description: "Preferred shopping channel - online, in-store, omni"
+        expr: PREFERRED_CHANNEL
+        data_type: VARCHAR
+      - name: preferred_store_id
+        description: "Preferred store location"
+        expr: PREFERRED_STORE_ID
+        data_type: VARCHAR
+    measures:
+      - name: loyalty_points
+        description: "Current loyalty points balance"
+        expr: LOYALTY_POINTS
+        data_type: INT
+        default_aggregation: sum
+      - name: lifetime_value
+        description: "Customer lifetime value in dollars"
+        expr: LIFETIME_VALUE
+        data_type: FLOAT
+        default_aggregation: sum
+      - name: avg_basket
+        description: "Average basket size"
+        expr: AVG_BASKET
+        data_type: FLOAT
+        default_aggregation: avg
+      - name: customer_count
+        description: "Count of customers"
+        expr: CUSTOMER_ID
+        data_type: VARCHAR
+        default_aggregation: count_distinct
+
+  - name: inventory
+    description: "Real-time inventory positions across DCs and stores"
+    base_table:
+      database: NOVAMART_RETAIL
+      schema: SUPPLY_CHAIN
+      table: INVENTORY
+    dimensions:
+      - name: sku
+        description: "Product SKU"
+        expr: SKU
+        data_type: VARCHAR
+      - name: location_id
+        description: "DC or Store identifier"
+        expr: LOCATION_ID
+        data_type: VARCHAR
+      - name: location_type
+        description: "Location type - DC or STORE"
+        expr: LOCATION_TYPE
+        data_type: VARCHAR
+    time_dimensions:
+      - name: last_receipt_date
+        description: "Date of last inventory receipt"
+        expr: LAST_RECEIPT_DATE
+        data_type: DATE
+      - name: last_sold_date
+        description: "Date of last sale"
+        expr: LAST_SOLD_DATE
+        data_type: DATE
+    measures:
+      - name: on_hand_qty
+        description: "Quantity on hand"
+        expr: ON_HAND_QTY
+        data_type: INT
+        default_aggregation: sum
+      - name: allocated_qty
+        description: "Quantity allocated to orders"
+        expr: ALLOCATED_QTY
+        data_type: INT
+        default_aggregation: sum
+      - name: in_transit_qty
+        description: "Quantity in transit"
+        expr: IN_TRANSIT_QTY
+        data_type: INT
+        default_aggregation: sum
+      - name: available_to_promise
+        description: "Available to Promise (ATP) quantity"
+        expr: AVAILABLE_TO_PROMISE
+        data_type: INT
+        default_aggregation: sum
+      - name: days_of_supply
+        description: "Days of supply based on sales velocity"
+        expr: DAYS_OF_SUPPLY
+        data_type: INT
+        default_aggregation: avg
+
+  - name: stores
+    description: "Store locations with format, capacity, and DC assignment"
+    base_table:
+      database: NOVAMART_RETAIL
+      schema: PRODUCT_360
+      table: STORES
+    dimensions:
+      - name: store_id
+        description: "Unique store identifier"
+        expr: STORE_ID
+        data_type: VARCHAR
+      - name: store_name
+        description: "Store display name"
+        expr: STORE_NAME
+        data_type: VARCHAR
+      - name: state
+        description: "Australian state - NSW, VIC, QLD, WA, SA"
+        expr: STATE
+        data_type: VARCHAR
+      - name: suburb
+        description: "Store suburb location"
+        expr: SUBURB
+        data_type: VARCHAR
+      - name: dc_id
+        description: "Assigned distribution center"
+        expr: DC_ID
+        data_type: VARCHAR
+      - name: format
+        description: "Store format - Flagship, Large, Medium"
+        expr: FORMAT
+        data_type: VARCHAR
+    measures:
+      - name: sqm
+        description: "Store floor space in square meters"
+        expr: SQM
+        data_type: INT
+        default_aggregation: sum
+      - name: staff_count
+        description: "Number of staff"
+        expr: STAFF_COUNT
+        data_type: INT
+        default_aggregation: sum
+      - name: store_count
+        description: "Count of stores"
+        expr: STORE_ID
+        data_type: VARCHAR
+        default_aggregation: count_distinct
+
+  - name: distribution_centers
+    description: "Distribution center details with capacity and throughput"
+    base_table:
+      database: NOVAMART_RETAIL
+      schema: SUPPLY_CHAIN
+      table: DISTRIBUTION_CENTERS
+    dimensions:
+      - name: dc_id
+        description: "Distribution center identifier"
+        expr: DC_ID
+        data_type: VARCHAR
+      - name: dc_name
+        description: "Distribution center name"
+        expr: DC_NAME
+        data_type: VARCHAR
+      - name: state
+        description: "State location"
+        expr: STATE
+        data_type: VARCHAR
+      - name: automation_level
+        description: "Automation level - HIGH, MEDIUM"
+        expr: AUTOMATION_LEVEL
+        data_type: VARCHAR
+    measures:
+      - name: capacity_pallets
+        description: "Pallet storage capacity"
+        expr: CAPACITY_PALLETS
+        data_type: INT
+        default_aggregation: sum
+      - name: daily_throughput
+        description: "Daily throughput in units"
+        expr: DAILY_THROUGHPUT
+        data_type: INT
+        default_aggregation: sum
+      - name: workforce
+        description: "DC workforce count"
+        expr: WORKFORCE
+        data_type: INT
+        default_aggregation: sum
+      - name: stores_served
+        description: "Number of stores served by DC"
+        expr: STORES_SERVED
+        data_type: INT
+        default_aggregation: sum
+
+relationships:
+  - name: orders_to_customers
+    left_table: orders
+    right_table: customers
+    join_type: left_outer
+    relationship_type: many_to_one
+    relationship_columns:
+      - left_column: customer_id
+        right_column: customer_id
+
+  - name: order_items_to_orders
+    left_table: order_items
+    right_table: orders
+    join_type: inner
+    relationship_type: many_to_one
+    relationship_columns:
+      - left_column: order_id
+        right_column: order_id
+
+  - name: order_items_to_products
+    left_table: order_items
+    right_table: products
+    join_type: left_outer
+    relationship_type: many_to_one
+    relationship_columns:
+      - left_column: sku
+        right_column: sku
+
+  - name: inventory_to_products
+    left_table: inventory
+    right_table: products
+    join_type: left_outer
+    relationship_type: many_to_one
+    relationship_columns:
+      - left_column: sku
+        right_column: sku
+
+  - name: stores_to_dcs
+    left_table: stores
+    right_table: distribution_centers
+    join_type: left_outer
+    relationship_type: many_to_one
+    relationship_columns:
+      - left_column: dc_id
+        right_column: dc_id
+
+verified_queries:
+  - name: "Total revenue by division"
+    question: "What is the total revenue by product division?"
+    verified_query: |
+      SELECT p.DIVISION, SUM(oi.LINE_TOTAL) as TOTAL_REVENUE
+      FROM NOVAMART_RETAIL.CUSTOMER_360.ORDER_ITEMS oi
+      JOIN NOVAMART_RETAIL.PRODUCT_360.PRODUCTS p ON oi.SKU = p.SKU
+      JOIN NOVAMART_RETAIL.CUSTOMER_360.ORDERS o ON oi.ORDER_ID = o.ORDER_ID
+      WHERE o.STATUS != 'CANCELLED'
+      GROUP BY p.DIVISION
+      ORDER BY TOTAL_REVENUE DESC
+
+  - name: "Top selling products"
+    question: "What are the top 10 best selling products?"
+    verified_query: |
+      SELECT p.PRODUCT_NAME, p.DIVISION, SUM(oi.QUANTITY) as UNITS_SOLD, SUM(oi.LINE_TOTAL) as REVENUE
+      FROM NOVAMART_RETAIL.CUSTOMER_360.ORDER_ITEMS oi
+      JOIN NOVAMART_RETAIL.PRODUCT_360.PRODUCTS p ON oi.SKU = p.SKU
+      JOIN NOVAMART_RETAIL.CUSTOMER_360.ORDERS o ON oi.ORDER_ID = o.ORDER_ID
+      WHERE o.STATUS != 'CANCELLED'
+      GROUP BY p.PRODUCT_NAME, p.DIVISION
+      ORDER BY UNITS_SOLD DESC
+      LIMIT 10
+
+  - name: "Customer tier distribution"
+    question: "How many customers are in each loyalty tier?"
+    verified_query: |
+      SELECT TIER, COUNT(*) as CUSTOMER_COUNT, AVG(LIFETIME_VALUE) as AVG_LTV
+      FROM NOVAMART_RETAIL.CUSTOMER_360.CUSTOMERS
+      GROUP BY TIER
+      ORDER BY CASE TIER WHEN 'PLATINUM' THEN 1 WHEN 'GOLD' THEN 2 WHEN 'SILVER' THEN 3 WHEN 'BRONZE' THEN 4 END
+
+  - name: "Inventory by DC"
+    question: "What is the total inventory by distribution center?"
+    verified_query: |
+      SELECT LOCATION_ID as DC, SUM(ON_HAND_QTY) as ON_HAND, SUM(AVAILABLE_TO_PROMISE) as ATP
+      FROM NOVAMART_RETAIL.SUPPLY_CHAIN.INVENTORY
+      WHERE LOCATION_TYPE = 'DC'
+      GROUP BY LOCATION_ID
+      ORDER BY ON_HAND DESC
+
+  - name: "Sales by channel"
+    question: "What are sales by channel?"
+    verified_query: |
+      SELECT CHANNEL, COUNT(*) as ORDER_COUNT, SUM(TOTAL) as TOTAL_REVENUE
+      FROM NOVAMART_RETAIL.CUSTOMER_360.ORDERS
+      WHERE STATUS != 'CANCELLED'
+      GROUP BY CHANNEL
+      ORDER BY TOTAL_REVENUE DESC
