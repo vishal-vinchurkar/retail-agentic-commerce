@@ -126,8 +126,11 @@ def is_product_relevant_for_context(product: dict, context: dict) -> bool:
     division = product.get('division', '').lower()
     
     if occasion == 'birthday' and age_group and ('child' in age_group or age_group in ['baby', 'toddler', 'teen']):
-        excluded_categories = ['garden', 'outdoor', 'furniture', 'office', 'formal', 'footwear', 'women', 'men', 'bedding', 'bathroom', 'kitchen']
-        excluded_keywords = ['planter', 'lawn', 'power tool', 'wine', 'alcohol', 'drill', 'mower', 'office', 'formal', 'leather shoes', 'dress shirt', 'mattress']
+        excluded_categories = ['garden', 'outdoor', 'furniture', 'office', 'formal', 'footwear', 'shoes', 'boots', 'sneakers',
+                                'women', 'men', 'bedding', 'bathroom', 'kitchen', 'automotive', 'paint', 'apparel']
+        excluded_keywords = ['planter', 'lawn', 'power tool', 'wine', 'alcohol', 'drill', 'mower', 'office', 'formal',
+                             'shoe', 'sneaker', 'boot', 'heel', 'sandal', 'loafer', 'slipper', 'leather shoes',
+                             'dress shirt', 'mattress', 'sofa', 'couch', 'desk', 'chair', 'printer', 'monitor']
         
         for excl in excluded_categories:
             if excl in category or excl in subcategory:
@@ -137,8 +140,8 @@ def is_product_relevant_for_context(product: dict, context: dict) -> bool:
             if excl in product_name:
                 return False
         
-        if division in ['outdoor_hardware', 'home_living']:
-            if 'toy' not in category and 'party' not in category and 'game' not in category:
+        if division in ['outdoor_hardware', 'home_living', 'apparel', 'office_tech', 'health_beauty']:
+            if 'toy' not in category and 'party' not in category and 'game' not in category and 'kids' not in category:
                 return False
         
         good_divisions = ['toys_entertainment', 'party', 'entertainment']
@@ -174,11 +177,12 @@ def agentic_search_products(query: str, limit: int = 4) -> tuple:
         if all_products:
             return (all_products[:limit], understanding)
     
-    results = cortex_search_products(query, limit * 2)
+    results = cortex_search_products(query, limit * 3)
     if results:
         filtered = [p for p in results if is_product_relevant_for_context(p, understanding)]
-        return (filtered[:limit] if filtered else results[:limit], understanding)
-    return (results, understanding)
+        if filtered:
+            return (filtered[:limit], understanding)
+    return (None, understanding)
 
 def cortex_search_products(query: str, limit: int = 4) -> list:
     conn = get_snowflake_connection()
@@ -311,8 +315,9 @@ def search_products(query: str, limit: int = 4) -> tuple:
             scored_products.append((score, product))
     
     scored_products.sort(key=lambda x: x[0], reverse=True)
-    results = [p[1] for p in scored_products[:limit]] if scored_products else PRODUCTS[:limit]
-    return (results, understanding)
+    candidates = [p[1] for p in scored_products] if scored_products else PRODUCTS
+    results = [p for p in candidates if is_product_relevant_for_context(p, understanding)]
+    return (results[:limit] if results else candidates[:limit], understanding)
 
 def generate_agent_insights(products: list, customer: dict, state: str) -> dict:
     insights = {}

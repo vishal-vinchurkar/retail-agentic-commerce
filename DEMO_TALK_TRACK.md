@@ -52,7 +52,7 @@ The audience remembers rhythm, not information density.
 
 > "Everything from the previous slide is still here. The Product 360. The governance. The data agents. [beat] But now -- we add the commerce experience layer.
 >
-> Notice the connections in the middle. API. MCP. A2A. [beat] These are the protocols that let the data agents talk to the commerce experience. And on the right -- the AI-powered commerce layer. Search to Buy. Shopper Brings Own Agent. Kiosk Experience. [pause]
+> Notice the connections in the middle. API. A2A. MCP. [beat] These are the protocols that let the data agents talk to the commerce experience. And on the right -- the AI-powered commerce layer. Search to Buy. Shopper Brings Own Agent. Kiosk Experience. [pause]
 >
 > Here's why this matters. [pause]
 >
@@ -92,7 +92,7 @@ The audience remembers rhythm, not information density.
 
 **Action:** Click into the search bar and type: `Help me plan a birthday party for a 5 year old`
 
-**On screen:** AI Thinking panel appears showing the reasoning chain. Skeleton shimmer loading. Products load. Cortex Search, Cortex Complete, MCP pills light up (Snowflake blue), plus UCP and A2A pills (industry warm).
+**On screen:** AI Thinking panel appears showing the reasoning chain. Skeleton shimmer loading. Products load. Cortex Search, Cortex Complete pills light up (Snowflake blue), plus UCP, A2A, and MCP pills (industry warm).
 
 > "Now. [beat] I'm not going to search for a product name. [beat] I'm going to describe a situation. [pause]
 >
@@ -106,7 +106,7 @@ The audience remembers rhythm, not information density.
 >
 > Cortex Search doesn't match keywords. [beat] It understands context. [beat] It knows a 5-year-old's birthday means age-appropriate toys. Fun games. Party decorations. [beat] And it's filtering *out* the things that don't belong. Power tools. Wine accessories. Office supplies. [pause]
 >
-> Look at the protocol strip. [beat] The Snowflake blue pills just lit up. Cortex Search providing the understanding. Cortex Complete generating recommendations. MCP as the transport. [beat] And on the right -- A2A is active. The Demand Sensing agent just passed trending data to Customer Intelligence, which recognized our customer as PLATINUM.
+> Look at the protocol strip. [beat] The Snowflake blue pills just lit up. Cortex Search providing the understanding. Cortex Complete generating recommendations. [beat] And on the industry side -- A2A is active. The Demand Sensing agent just passed trending data to Customer Intelligence, which recognized our customer as PLATINUM. MCP is active too -- structured context flowing between agents.
 >
 > Each product card shows three things the agents calculated in real-time. [beat] Live inventory from the nearest distribution center. [beat] A dynamically calculated price with the PLATINUM 15% discount already applied. [beat] And an AI-generated recommendation specific to the birthday party context. [pause]
 >
@@ -126,6 +126,10 @@ The audience remembers rhythm, not information density.
 >
 > And Cortex Complete generated a personalized recommendation. Not a generic description. [beat] A contextual recommendation for a 5-year-old's birthday party specifically. [pause]
 >
+> Now -- see UCP lighting up on the protocol strip? [beat] That's the Universal Commerce Protocol. What we're showing here is the exact pattern UCP is designed for -- a single orchestration layer that coordinates discovery, pricing, inventory, and customer context into one unified experience. [pause]
+>
+> Imagine this on your own website or app. [beat] A customer asks your chatbot 'I need running shoes for a marathon.' [beat] Today your search returns 400 results. [beat] With this pattern, your agents would understand the intent, check stock at the nearest warehouse, apply loyalty pricing, and surface only what's relevant -- in one coordinated response. [beat] That's what UCP enables. [beat] And the data layer powering it? Already in Snowflake.
+>
 > Let me add a couple of items. [beat] Watch the agent panel. 4 out of 7 agents complete. Demand Sensing. Customer Intelligence. Inventory Optimizer. Pricing Agent. [beat] All done. [beat] The final three activate at checkout.
 >
 > Real price. Real stock. Real recommendation. [beat] No surprises."
@@ -140,7 +144,13 @@ The audience remembers rhythm, not information density.
 >
 > In a traditional system [beat] the pricing engine is separate from inventory. [beat] Which is separate from the loyalty system. [beat] Mismatches happen constantly. A customer gets a price that doesn't reflect their tier. Or buys an item that's actually out of stock. [pause]
 >
-> With agentic commerce, the agents coordinate in real-time. [beat] The price the customer sees is the price they pay. [beat] And the item they buy is the item that ships."
+> With agentic commerce, the agents coordinate in real-time. [beat] The price the customer sees is the price they pay. [beat] And the item they buy is the item that ships.
+>
+> [pause]
+>
+> This is where ACP -- the Agent Commerce Protocol -- becomes relevant. [beat] What you're seeing is the pattern ACP describes: an agent-mediated transaction where every step from 'Add to Cart' through to checkout preserves full context. [beat] The agent knows the customer's tier. It knows the intent. It knows the inventory position. [beat] Nothing is lost between steps. [pause]
+>
+> Think about how this applies to your ecosystem. [beat] Your mobile app. [beat] Your in-store kiosk. [beat] Your call centre. [beat] Even a customer's own AI assistant shopping on their behalf. [pause] ACP gives you a standard way for any of those touchpoints to carry a complete agent-mediated transaction -- not just a shopping cart, but the full context of *why* the customer is buying, *what* the agents decided, and *how* the price was calculated. [beat] That's the difference between a cart and an intelligent transaction."
 
 ---
 
@@ -222,13 +232,13 @@ The audience remembers rhythm, not information density.
 >
 > **Layer 1. The frontend.** [beat] That was the UI you just interacted with. Dark mode. Cinematic boot sequence. Mobile responsive. [beat] The front door.
 >
-> **Layer 2. The protocol layer.** [beat] You watched two groups light up in real-time. Snowflake blue on the left -- Cortex Search, Complete, Analyst, MCP. [beat] Industry protocols on the right -- UCP, A2A, AP2, ACP. [beat] Pill by pill. That's exactly what you saw.
+> **Layer 2. The protocol layer.** [beat] You watched two groups light up in real-time. Snowflake-native on the left -- Cortex Search, Complete, Analyst, Streamlit. [beat] Industry protocols on the right -- UCP, A2A, MCP, AP2, ACP. [beat] Pill by pill. That's exactly what you saw.
 >
 > **Layer 3. Seven AI agents.** [beat] Demand Sensing spotted the birthday party trend. [beat] Customer Intelligence recognized PLATINUM. [beat] Inventory Optimizer checked ATP across 5 DCs. [beat] Pricing Agent applied the discount. [beat] Fulfillment selected Melbourne. [beat] Logistics calculated the route. [beat] Supplier Collaboration fired the PO. [pause] Every single one executed.
 >
 > **Layer 4. Snowflake Cortex.** [beat] Cortex Search with vector embeddings. [beat] Cortex Complete with LLM inference. [beat] Cortex Analyst with the semantic model. [beat] The AI engine underneath everything you just saw.
 >
-> **Layer 5. The data platform.** [beat] One database. NOVAMART_RETAIL. [beat] Product 360. Customer 360. Supply Chain. Agents. Semantic Models. [beat] Every transaction. Every agent decision. Every PO. [beat] Recorded. Queryable. In Snowflake.
+> **Layer 5. The data platform.** [beat] NOVAMART_RETAIL. [beat] Product 360. Customer 360. Supply Chain. Agents. Semantic Models. [beat] Every transaction. Every agent decision. Every PO. [beat] Recorded. Queryable. Governed. In Snowflake.
 >
 > **Layer 6. Distribution infrastructure.** [beat] Sydney. Melbourne. Brisbane. Perth. Adelaide. [beat] You saw Melbourne selected, the route to Chadstone planned, right there on the supply chain map.
 >

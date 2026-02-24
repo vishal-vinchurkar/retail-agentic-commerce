@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NovaMart Architecture - Dark</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#070a12;--bg2:#0c1225;
+    --sf-blue:#29B5E8;--sf-dark:#0D5B8C;--sf-cyan:#06b6d4;
+    --amber:#f59e0b;--green:#10B981;--purple:#8B5CF6;
+    --text:rgba(255,255,255,0.85);--text-dim:rgba(255,255,255,0.5);--text-muted:rgba(255,255,255,0.35);
+    --border:rgba(255,255,255,0.08);
+    --radius:10px;
+  }
+  html{font-family:'Inter',sans-serif;color:var(--text);background:linear-gradient(180deg,var(--bg) 0%,var(--bg2) 100%)}
+  body{min-height:100vh;display:flex;justify-content:center;align-items:center;padding:20px}
+  .canvas{
+    width:960px;height:560px;
+    background:linear-gradient(170deg,#0a0f1a 0%,#0c1225 40%,#0e1630 75%,#0a0f1a 100%);
+    border-radius:14px;overflow:hidden;position:relative;
+    border:1px solid rgba(41,181,232,0.12);
+    box-shadow:0 4px 40px rgba(0,0,0,0.5),0 0 60px rgba(41,181,232,0.03);
+    display:flex;flex-direction:column;
+  }
+  .header{
+    text-align:center;padding:14px 24px 10px;flex-shrink:0;position:relative;
+    background:linear-gradient(135deg,rgba(13,91,140,0.3) 0%,rgba(41,181,232,0.15) 100%);
+    border-bottom:1px solid rgba(41,181,232,0.15);
+  }
+  .header h1{font-size:16px;font-weight:800;color:white;letter-spacing:-0.02em}
+  .header h1 span{color:var(--sf-blue)}
+  .header p{font-size:10px;color:var(--text-dim);margin-top:3px}
+  .content{flex:1;display:flex;flex-direction:column;padding:10px 16px 8px;gap:5px;min-height:0}
+  .layer-label{font-size:8px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--sf-blue);margin-bottom:3px;display:flex;align-items:center;gap:5px}
+  .layer-label::before{content:"";width:12px;height:2px;background:var(--sf-blue);border-radius:1px;opacity:0.5}
+  .connector{text-align:center;padding:1px 0;color:rgba(41,181,232,0.3);font-size:12px;flex-shrink:0}
+
+  .frontend-bar{background:linear-gradient(135deg,rgba(139,92,246,0.12),rgba(99,102,241,0.06));border:1px solid rgba(139,92,246,0.2);border-radius:var(--radius);padding:8px 14px;display:flex;align-items:center;gap:12px}
+  .frontend-icon{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .frontend-bar h3{font-size:11px;font-weight:700;color:white}
+  .frontend-bar .tags{display:flex;gap:4px;margin-top:2px}
+  .tag{font-size:8px;padding:2px 8px;border-radius:20px;font-weight:500;background:rgba(41,181,232,0.08);color:var(--sf-blue);border:1px solid rgba(41,181,232,0.15)}
+  .layer-num{margin-left:auto;font-size:9px;font-weight:700;color:rgba(139,92,246,0.4);text-transform:uppercase;letter-spacing:0.08em}
+
+  .proto-row{display:flex;gap:8px}
+  .proto-group{flex:1;border-radius:var(--radius);padding:8px 10px}
+  .sf-group{background:rgba(41,181,232,0.06);border:1px solid rgba(41,181,232,0.15)}
+  .ind-group{background:rgba(255,255,255,0.02);border:1px solid var(--border)}
+  .group-label{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;text-align:center;margin-bottom:5px}
+  .sf-label{color:var(--sf-blue)}
+  .ind-label{color:var(--text-muted)}
+  .pills-row{display:flex;gap:4px}
+  .pill{flex:1;text-align:center;border-radius:8px;padding:5px 2px}
+  .pill-sf{background:rgba(41,181,232,0.08);border:1px solid rgba(41,181,232,0.18)}
+  .pill-sf .p-code{color:var(--sf-blue);font-size:11px;font-weight:800}
+  .pill-sf .p-sub{color:var(--text-muted);font-size:7px}
+  .pill-ind{border:1px solid}
+  .pill-ind .p-code{font-size:11px;font-weight:800}
+  .pill-ind .p-sub{font-size:7px;color:var(--text-muted)}
+  .pill-ucp{background:rgba(245,158,11,0.05);border-color:rgba(245,158,11,0.12)}.pill-ucp .p-code{color:var(--amber)}
+  .pill-a2a{background:rgba(16,185,129,0.05);border-color:rgba(16,185,129,0.12)}.pill-a2a .p-code{color:var(--green)}
+  .pill-ap2{background:rgba(139,92,246,0.05);border-color:rgba(139,92,246,0.12)}.pill-ap2 .p-code{color:var(--purple)}
+  .pill-acp{background:rgba(251,146,60,0.05);border-color:rgba(251,146,60,0.12)}.pill-acp .p-code{color:#fb923c}
+
+  .agents-row{background:rgba(139,92,246,0.04);border:1px solid rgba(139,92,246,0.12);border-radius:var(--radius);padding:8px 10px}
+  .agents-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:4px}
+  .agent{text-align:center;border-radius:8px;padding:6px 2px;border:1px solid}
+  .agent .emoji{font-size:16px;line-height:1}
+  .agent .a-name{font-size:8px;font-weight:700;color:white;margin-top:2px}
+  .ag-demand{background:rgba(99,102,241,0.08);border-color:rgba(99,102,241,0.18)}
+  .ag-customer{background:rgba(13,148,136,0.08);border-color:rgba(13,148,136,0.18)}
+  .ag-inventory{background:rgba(5,150,105,0.08);border-color:rgba(5,150,105,0.18)}
+  .ag-pricing{background:rgba(219,39,119,0.08);border-color:rgba(219,39,119,0.18)}
+  .ag-fulfill{background:rgba(217,119,6,0.08);border-color:rgba(217,119,6,0.18)}
+  .ag-logistics{background:rgba(124,58,237,0.08);border-color:rgba(124,58,237,0.18)}
+  .ag-supplier{background:rgba(220,38,38,0.08);border-color:rgba(220,38,38,0.18)}
+  .a2a-bar{text-align:center;font-size:8px;color:rgba(16,185,129,0.5);font-weight:700;letter-spacing:0.08em}
+
+  .bottom-row{display:flex;gap:8px}
+  .cortex-svc{flex:1;background:linear-gradient(135deg,rgba(13,91,140,0.2),rgba(41,181,232,0.08));border:1px solid rgba(41,181,232,0.2);border-radius:var(--radius);padding:8px 12px}
+  .cortex-svc .c-label{color:rgba(41,181,232,0.6);font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:3px}
+  .cortex-svc .c-desc{color:var(--text-dim);font-size:10px;line-height:1.5}
+  .data-plat{flex:1;background:rgba(41,181,232,0.04);border:1px solid rgba(41,181,232,0.12);border-radius:var(--radius);padding:8px 12px}
+  .data-plat .d-label{color:rgba(41,181,232,0.6);font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:3px}
+  .schema-chips{display:flex;gap:3px;flex-wrap:wrap}
+  .schema-chip{font-size:8px;padding:2px 8px;background:rgba(41,181,232,0.08);border:1px solid rgba(41,181,232,0.15);border-radius:20px;color:var(--text-dim);font-weight:500}
+
+  .dc-row{display:flex;gap:6px}
+  .dc{flex:1;text-align:center;background:rgba(245,158,11,0.04);border:1px solid rgba(245,158,11,0.1);border-radius:8px;padding:6px 2px}
+  .dc-dot{width:7px;height:7px;border-radius:50%;background:#22c55e;margin:0 auto 3px;box-shadow:0 0 6px rgba(34,197,94,0.4)}
+  .dc-name{font-size:9px;font-weight:700;color:white}
+
+  .footer{text-align:center;padding:6px 16px 8px;flex-shrink:0;border-top:1px solid var(--border)}
+  .footer-badge{display:inline-block;padding:3px 12px;background:linear-gradient(135deg,rgba(13,91,140,0.3),rgba(41,181,232,0.15));border:1px solid rgba(41,181,232,0.2);border-radius:20px;font-size:9px;font-weight:600;color:var(--text-dim)}
+</style>
+</head>
+<body>
+<div class="canvas">
+  <div class="header">
+    <h1>NovaMart<span>:</span> Agentic Retail Intelligence Platform</h1>
+    <p>7 AI Agents &nbsp;&middot;&nbsp; 3 Cortex Services + Streamlit &nbsp;&middot;&nbsp; 5 Industry Protocols &nbsp;&middot;&nbsp; End-to-End Autonomous Commerce</p>
+  </div>
+
+  <div class="content">
+    <!-- Layer 1: Frontend -->
+    <div>
+      <div class="frontend-bar">
+        <div class="frontend-icon">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        </div>
+        <div>
+          <h3>Streamlit Glassmorphism UI</h3>
+          <div class="tags">
+            <span class="tag">Dark / Light Mode</span>
+            <span class="tag">Cinematic Boot</span>
+            <span class="tag">Agent Cascade</span>
+            <span class="tag">Activity Stream</span>
+          </div>
+        </div>
+        <div class="layer-num">Layer 1</div>
+      </div>
+    </div>
+
+    <div class="connector">&#9662;</div>
+
+    <!-- Layer 2: Cortex + Protocols -->
+    <div>
+      <div class="proto-row">
+        <div class="proto-group sf-group" style="flex:1.1">
+          <div class="group-label sf-label">&#x2744; Snowflake Native</div>
+          <div class="pills-row">
+            <div class="pill pill-sf"><div class="p-code">Search</div><div class="p-sub">Semantic</div></div>
+            <div class="pill pill-sf"><div class="p-code">Complete</div><div class="p-sub">LLM</div></div>
+            <div class="pill pill-sf"><div class="p-code">Analyst</div><div class="p-sub">Text-to-SQL</div></div>
+            <div class="pill pill-sf"><div class="p-code">Streamlit</div><div class="p-sub">Experience</div></div>
+          </div>
+        </div>
+        <div class="proto-group ind-group" style="flex:0.9">
+          <div class="group-label ind-label">Industry Protocols</div>
+          <div class="pills-row">
+            <div class="pill pill-ind pill-ucp"><div class="p-code">UCP</div><div class="p-sub">Commerce</div></div>
+            <div class="pill pill-ind pill-a2a"><div class="p-code">A2A</div><div class="p-sub">Agent</div></div>
+            <div class="pill pill-ind pill-a2a"><div class="p-code">MCP</div><div class="p-sub">Context</div></div>
+            <div class="pill pill-ind pill-ap2"><div class="p-code">AP2</div><div class="p-sub">Payment</div></div>
+            <div class="pill pill-ind pill-acp"><div class="p-code">ACP</div><div class="p-sub">Txn</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="connector">&#9662;</div>
+
+    <!-- Layer 3: Agents -->
+    <div>
+      <div class="agents-row">
+        <div class="agents-grid">
+          <div class="agent ag-demand"><div class="emoji">&#x1F4CA;</div><div class="a-name">Demand</div></div>
+          <div class="agent ag-customer"><div class="emoji">&#x1F464;</div><div class="a-name">Customer</div></div>
+          <div class="agent ag-inventory"><div class="emoji">&#x1F4E6;</div><div class="a-name">Inventory</div></div>
+          <div class="agent ag-pricing"><div class="emoji">&#x1F4B0;</div><div class="a-name">Pricing</div></div>
+          <div class="agent ag-fulfill"><div class="emoji">&#x1F3ED;</div><div class="a-name">Fulfill</div></div>
+          <div class="agent ag-logistics"><div class="emoji">&#x1F69A;</div><div class="a-name">Logistics</div></div>
+          <div class="agent ag-supplier"><div class="emoji">&#x1F91D;</div><div class="a-name">Supplier</div></div>
+        </div>
+        <div class="a2a-bar">&larr; A2A: STRUCTURED CONTEXT PASSING &rarr;</div>
+      </div>
+    </div>
+
+    <div class="connector">&#9662;</div>
+
+    <!-- Layer 4+5: Cortex Services + Data Platform -->
+    <div>
+      <div class="bottom-row">
+        <div class="cortex-svc">
+          <div class="c-label">Cortex AI Services</div>
+          <div class="c-desc">Vector Embeddings &middot; LLM Inference &middot; Semantic Models</div>
+        </div>
+        <div class="data-plat">
+          <div class="d-label">Snowflake Data Platform</div>
+          <div class="schema-chips">
+            <span class="schema-chip">PRODUCT_360</span>
+            <span class="schema-chip">CUSTOMER_360</span>
+            <span class="schema-chip">SUPPLY_CHAIN</span>
+            <span class="schema-chip">AGENTS</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="connector">&#9662;</div>
+
+    <!-- Layer 6: Distribution -->
+    <div>
+      <div class="dc-row">
+        <div class="dc"><div class="dc-dot"></div><div class="dc-name">Sydney</div></div>
+        <div class="dc"><div class="dc-dot"></div><div class="dc-name">Melbourne</div></div>
+        <div class="dc"><div class="dc-dot"></div><div class="dc-name">Brisbane</div></div>
+        <div class="dc"><div class="dc-dot"></div><div class="dc-name">Perth</div></div>
+        <div class="dc"><div class="dc-dot"></div><div class="dc-name">Adelaide</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="footer-badge">&#x2744; Powered by Snowflake Cortex</div>
+  </div>
+</div>
+</body>
+</html>

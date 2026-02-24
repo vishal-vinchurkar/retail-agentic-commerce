@@ -5,14 +5,14 @@
 
 ---
 
-## Quick Reference: Snowflake Cortex Services (Native)
+## Quick Reference: Snowflake Native Services
 
 | Service | What It Does | Demo Moment |
 |---------|-------------|-------------|
 | **Cortex Search** | Semantic product discovery via vector embeddings | AI Thinking panel + search results |
 | **Cortex Complete** | LLM inference for agent reasoning and recommendations | Personalized product cards |
 | **Cortex Analyst** | Text-to-SQL analytics via semantic model | Analytics dashboard (if connected) |
-| **MCP** | Model Context Protocol -- Snowflake's native AI transport layer | Active whenever any Cortex service is invoked |
+| **Streamlit** | Native experience layer for the full application | The entire UI you interact with |
 
 ## Quick Reference: Industry Commerce Protocols
 
@@ -20,6 +20,7 @@
 |----------|-----------|------|-------------|
 | **UCP** | Universal Commerce Protocol (Google) | Overarching orchestration | Entire flow from discovery to delivery |
 | **A2A** | Agent-to-Agent (Google) | Inter-agent communication | Agent cascade panel -- 7 agents passing context |
+| **MCP** | Model Context Protocol | Model context sharing | Architecture maps to this protocol for structured agent context |
 | **AP2** | Agent Payment Protocol | Payment orchestration | Checkout with dynamic pricing + loyalty |
 | **ACP** | Agent Commerce Protocol (OpenAI) | Commerce transaction | Cart to order confirmation flow |
 
@@ -47,7 +48,7 @@ The app defaults to **dark mode** for optimal presentation impact. Use the theme
 - Floating "Live on Snowflake Cortex" badge visible in bottom-right
 
 **What to say:**
-> "This is NovaMart -- a fully agentic retail intelligence platform running live on Snowflake. What you're seeing is 7 specialized AI agents, each powered by Snowflake Cortex, orchestrating the complete commerce experience. Notice the protocol strip at the top -- the blue pills are Snowflake Cortex services powering this natively, and the warm-toned pills on the right are the emerging industry commerce protocols the flow maps to. We're going to light up every single one in the next 90 seconds."
+> "This is NovaMart -- a fully agentic retail intelligence platform running live on Snowflake. What you're seeing is 7 specialized AI agents, powered by Snowflake Cortex, orchestrating the complete commerce experience. Notice the protocol strip at the top -- the blue pills are Snowflake-native services powering this, and the warm-toned pills on the right are the emerging industry commerce protocols the flow maps to. We're going to light up every single one in the next 90 seconds."
 
 **Key message:** This is production-grade agentic commerce, not a chatbot demo.
 
@@ -65,7 +66,7 @@ The app defaults to **dark mode** for optimal presentation impact. Use the theme
    - "Filtering categories: Toys, Party Supplies, Games"
    - "Querying Cortex Search Service..."
 2. Skeleton shimmer loading cards appear
-3. Protocol strip: Snowflake pills (**Cortex Search**, **Cortex Complete**, **MCP**) and industry pills (**UCP**, **A2A**) light up
+3. Protocol strip: Snowflake pills (**Cortex Search**, **Cortex Complete**) and industry pills (**UCP**, **A2A**) light up
 4. Agent panel: agents cascade to active/done states with progress counter
 5. Products appear with star ratings, ribbons, personalized AI recommendations
 
@@ -74,9 +75,9 @@ The app defaults to **dark mode** for optimal presentation impact. Use the theme
 
 > "On the right, you can see Agent-to-Agent in action -- that's an emerging industry protocol. The Demand Sensing agent passes trending data to the Customer Intelligence agent, which passes the customer's PLATINUM tier to the Pricing agent. Structured context flowing between autonomous agents."
 
-> "And the blue pills? That's what Snowflake is powering natively. Cortex Search providing the semantic understanding, Cortex Complete generating those personalized recommendations, and MCP -- Snowflake's Model Context Protocol -- serving as the AI transport layer."
+> "And the blue pills? That's what Snowflake is powering natively. Cortex Search providing the semantic understanding, Cortex Complete generating those personalized recommendations. The warm pills on the right are the industry protocols the architecture maps to -- including MCP for structured context sharing between agents."
 
-**Key message:** Snowflake Cortex powers the AI natively. Industry protocols describe the pattern. Both are visualized in the strip.
+**Key message:** Snowflake powers the AI natively. Industry protocols describe the pattern. Both are visualized in the strip.
 
 ---
 
@@ -91,9 +92,9 @@ The app defaults to **dark mode** for optimal presentation impact. Use the theme
 - Activity log streams real-time events
 
 **What to say:**
-> "Each product card shows live inventory from the nearest distribution center, dynamic pricing with the customer's loyalty discount applied in real-time, and an AI-generated recommendation specific to the birthday party context. That's the Universal Commerce Protocol -- UCP -- orchestrating demand, inventory, pricing, and customer intelligence into a unified experience."
+> "Each product card shows live inventory from the nearest distribution center, dynamic pricing with the customer's loyalty discount applied in real-time, and an AI-generated recommendation specific to the birthday party context. This is the pattern UCP -- the Universal Commerce Protocol -- is designed to standardize: one orchestration layer coordinating discovery, pricing, inventory, and customer context into a single unified response. Imagine this on your own website, your app, your kiosk -- any customer touchpoint where agents need to coordinate across systems to deliver one coherent answer."
 
-**Key message:** UCP unifies the agent responses into a cohesive customer experience.
+**Key message:** UCP describes the orchestration pattern the app demonstrates. It's an integration opportunity for any customer-facing channel.
 
 ---
 
@@ -108,11 +109,11 @@ The app defaults to **dark mode** for optimal presentation impact. Use the theme
 4. On confirmation: confetti burst, supply chain map animation, all 7 agents show green
 
 **What to say:**
-> "Now we enter the payment flow -- that's AP2, the Agent Payment Protocol. The Pricing Agent has calculated the optimal price, the Customer Intelligence Agent has applied the PLATINUM loyalty discount, and the payment is processed with full agent context preserved."
+> "Now we enter the payment flow. AP2 -- the Agent Payment Protocol -- describes this pattern: payment orchestrated with full agent context. The Pricing Agent calculated the optimal price, Customer Intelligence confirmed the PLATINUM discount, and that context is preserved through payment. No re-lookup. No mismatch."
 
-> "And look -- the Agent Commerce Protocol, ACP, wraps this entire transaction. From the moment they said 'Add to Cart' to right now, every step has been agent-mediated. The Fulfillment Orchestrator just selected the optimal distribution center, the Logistics Optimizer calculated the delivery route, and the Supplier Collaboration Agent triggered auto-replenishment."
+> "And ACP -- the Agent Commerce Protocol -- wraps the entire transaction end-to-end. Think about what this means for your business: a customer's own AI assistant could initiate a purchase on your site, and ACP gives you a standard way to carry that agent-mediated transaction across your mobile app, your website, even a third-party marketplace -- with full context preserved at every step. That's the integration opportunity these protocols unlock."
 
-**Key message:** AP2 and ACP handle the commerce transaction. All Snowflake services and industry protocols are now active.
+**Key message:** AP2 and ACP are integration patterns your commerce stack can adopt. The demo shows the architecture; the protocols describe how to standardize it across your channels.
 
 ---
 
@@ -127,16 +128,16 @@ The app defaults to **dark mode** for optimal presentation impact. Use the theme
 **What to say:**
 > "Every agent has executed. The supply chain map shows the route from the Melbourne Distribution Centre to the Chadstone store. An auto-replenishment purchase order has been generated. And every single transaction is recorded in Snowflake -- queryable, auditable, real-time."
 
-> "What you just saw is the complete agentic commerce loop: 4 Snowflake Cortex services including MCP, 4 industry commerce protocols, 7 AI agents -- from 'Help me plan a party' to 'Your order is confirmed' -- in under 60 seconds."
+> "What you just saw is the complete agentic commerce loop: 4 Snowflake-native services, 5 industry commerce protocols, 7 AI agents -- from 'Help me plan a party' to 'Your order is confirmed' -- in under 60 seconds."
 
-**Key message:** End-to-end agentic commerce on Snowflake. All Cortex services and industry protocols demonstrated.
+**Key message:** End-to-end agentic commerce on Snowflake. All native services and industry protocols demonstrated.
 
 ---
 
 ### STEP 6: Close (1:45 - 2:00)
 
 **What to point out:**
-- Protocol strip: all Snowflake blue + industry warm pills illuminated
+- Protocol strip: all 4 Snowflake blue + 5 industry warm pills illuminated
 - Agent panel: 7/7 complete
 - Floating badge: "Live on Snowflake Cortex"
 
@@ -171,12 +172,12 @@ Record at 1080p or higher. Use dark mode. Open in incognito window so boot seque
 | 0:18-0:22 | Click Add to Cart on 2 items | **"Real-time Pricing + Inventory Across 5 DCs"** |
 | 0:22-0:28 | Open Cart > Checkout > Pay | **"All Protocols Active -- End-to-End Agent Commerce"** |
 | 0:28-0:38 | Order completes, supply chain map animates | **"Auto-Replenishment PO Generated"** |
-| 0:38-0:42 | Slow mouse pan across protocol strip | **"Cortex Search / Complete / Analyst / MCP + UCP / A2A / AP2 / ACP"** |
+| 0:38-0:42 | Slow mouse pan across protocol strip | **"Cortex Search / Complete / Analyst / Streamlit + UCP / A2A / MCP / AP2 / ACP"** |
 | 0:42-0:45 | Hold on full app with Snowflake badge | **"Powered by Snowflake Cortex"** |
 
 ### LinkedIn Post Caption
 
-> Retailers lose $1.75 trillion annually to supply chain inefficiencies. What if AI agents could fix that?
+> Retailers lose $1.73 trillion annually to inventory distortion. What if AI agents could fix that?
 >
 > I built NovaMart -- a fully agentic retail commerce platform on Snowflake Cortex. Here's what it does:
 >
@@ -193,7 +194,7 @@ Record at 1080p or higher. Use dark mode. Open in incognito window so boot seque
 >
 > From discovery to payment to replenishment -- in under 60 seconds.
 >
-> This is agentic commerce: not a chatbot, not a copilot. Autonomous agents powered by Snowflake Cortex (Search, Complete, Analyst, MCP) and mapping to industry protocols (UCP, A2A, AP2, ACP) to close the gap between customer experience and supply chain execution.
+> This is agentic commerce: not a chatbot, not a copilot. Autonomous agents powered by Snowflake (Cortex Search, Complete, Analyst + Streamlit) and mapping to industry protocols (UCP, A2A, MCP, AP2, ACP) to close the gap between customer experience and supply chain execution.
 >
 > Why does this matter?
 > - Customers get intent-driven discovery, not keyword matching
@@ -211,7 +212,7 @@ Record at 1080p or higher. Use dark mode. Open in incognito window so boot seque
 If someone asks "how does this actually work?":
 
 - **Frontend:** Streamlit with custom glassmorphism CSS, dark/light mode
-- **AI backbone:** Snowflake Cortex (Search, Complete, Analyst)
+- **AI backbone:** Snowflake Cortex (Search, Complete, Analyst) + Streamlit (experience layer)
 - **Data layer:** Snowflake NOVAMART_RETAIL database with Product 360, Customer 360, Supply Chain, and Agent schemas
 - **Agent orchestration:** 7 specialized Python agents, each calling Cortex services with structured context passing
 - **Real-time:** Live inventory queries, dynamic pricing calculations, and contextual recommendations per request

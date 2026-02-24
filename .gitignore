@@ -34,3 +34,7 @@ snowflake_credentials.*
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Temp/lock files
+~$*
+.~*
